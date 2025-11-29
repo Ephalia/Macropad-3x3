@@ -2,7 +2,7 @@
 
 #include "tusb.h"
 
-/* Device descriptor */
+/* Cihaz tanımlayıcısı */
 static tusb_desc_device_t const desc_device = {
     .bLength = sizeof(tusb_desc_device_t),
     .bDescriptorType = TUSB_DESC_DEVICE,
@@ -11,7 +11,7 @@ static tusb_desc_device_t const desc_device = {
     .bDeviceSubClass = MISC_SUBCLASS_COMMON,
     .bDeviceProtocol = MISC_PROTOCOL_IAD,
     .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
-    .idVendor = 0x2E8A, // Raspberry Pi (for development purposes)
+    .idVendor = 0x2E8A, // Raspberry Pi (geliştirme amaçlı)
     .idProduct = 0x5001,
     .bcdDevice = 0x0100,
     .iManufacturer = 0x01,
@@ -38,7 +38,7 @@ static uint8_t const desc_configuration[] = {
 };
 
 char const *string_desc_arr[] = {
-    (const char[]){0x09, 0x04}, // 0: supported language is English (0x0409)
+    (const char[]){0x09, 0x04}, // 0: desteklenen dil İngilizce'dir (0x0409)
     "Open Source",
     "Pico HID Macropad",
     "0001",
@@ -47,7 +47,7 @@ char const *string_desc_arr[] = {
 
 static uint16_t _desc_str[32];
 
-/* Device Descriptors */
+/* Cihaz Tanımlayıcıları */
 uint8_t const *tud_descriptor_device_cb(void) {
     return (uint8_t const *)&desc_device;
 }

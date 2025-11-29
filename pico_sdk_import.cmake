@@ -1,5 +1,5 @@
-# Auto-locate the Pico SDK. Uses the PICO_SDK_PATH environment variable when available
-# and falls back to FetchContent to download a local copy under .pico-sdk/.
+# Pico SDK'yı otomatik olarak konumlandırır. PICO_SDK_PATH ortam değişkeni mevcutsa kullanır
+# ve değilse .pico-sdk/ altına yerel bir kopyasını indirmek için FetchContent'e geri döner.
 
 if(NOT PICO_SDK_PATH)
     if(DEFINED ENV{PICO_SDK_PATH} AND (NOT "$ENV{PICO_SDK_PATH}" STREQUAL ""))
@@ -19,7 +19,7 @@ if(NOT PICO_SDK_PATH)
 endif()
 
 if(NOT EXISTS "${PICO_SDK_PATH}/pico_sdk_init.cmake")
-    message(FATAL_ERROR "pico_sdk_init.cmake could not be found. Please set PICO_SDK_PATH or ensure the SDK was fetched correctly.")
+    message(FATAL_ERROR "pico_sdk_init.cmake bulunamadı. Lütfen PICO_SDK_PATH'i ayarlayın veya SDK'nın doğru şekilde getirildiğinden emin olun.")
 endif()
 
 include(${PICO_SDK_PATH}/pico_sdk_init.cmake)

@@ -69,7 +69,7 @@ static void scan_buttons(void) {
     absolute_time_t now = get_absolute_time();
 
     for (size_t i = 0; i < BUTTON_COUNT; ++i) {
-        bool sample = !gpio_get(BUTTON_GPIOS[i]); // active low
+        bool sample = !gpio_get(BUTTON_GPIOS[i]); // aktif-düşük
         button_state_t *state = &button_states[i];
 
         if (sample != state->last_sample) {
@@ -114,7 +114,7 @@ static void send_macro_report(uint8_t button_index, bool pressed) {
 static bool enqueue_event(uint8_t index, bool pressed) {
     uint8_t next_head = (event_head + 1) % EVENT_QUEUE_DEPTH;
     if (next_head == event_tail) {
-        // queue full, drop the event
+        // kuyruk dolu, olayı düşür
         return false;
     }
 
