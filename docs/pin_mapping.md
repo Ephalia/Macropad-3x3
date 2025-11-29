@@ -1,23 +1,23 @@
-# Pin Mapping & Wiring Guide
+# Pin Eşlemesi & Kablolama Kılavuzu
 
-The macropad uses nine independent GPIO pins on the Raspberry Pi Pico. Buttons are arranged as a 3×3 grid (row-major order) and wired as **active-low** inputs (each button shorts the GPIO to ground when pressed). Internal pull-ups are enabled in firmware, so no external resistors are required.
+Macropad, Raspberry Pi Pico üzerinde dokuz bağımsız GPIO pini kullanır. Düğmeler 3×3 ızgara şeklinde (satır-öncelikli sıralama) düzenlenmiştir ve **aktif-düşük** girişler olarak kablolıdır (her düğme basıldığında GPIO'yu toprağa kısa devre yapar). Dahili pull-up'lar firmware'de etkinleştirilmiştir, bu nedenle harici direnç gerekmez.
 
-## GPIO layout
+## GPIO düzeni
 
-| Button position | GPIO | Default macro         |
+| Düğme konumu    | GPIO | Varsayılan makro      |
 | --------------- | ---- | --------------------- |
-| Row 1, Column 1 | GP2  | `Ctrl + C`            |
-| Row 1, Column 2 | GP3  | `Ctrl + V`            |
-| Row 1, Column 3 | GP4  | `Ctrl + X`            |
-| Row 2, Column 1 | GP5  | `Alt + Tab`           |
-| Row 2, Column 2 | GP6  | `Win + D`             |
-| Row 2, Column 3 | GP7  | `Win + L`             |
-| Row 3, Column 1 | GP8  | `Ctrl + Alt + T`      |
-| Row 3, Column 2 | GP9  | `Ctrl + Shift + N`    |
-| Row 3, Column 3 | GP10 | `Ctrl + Z`            |
+| Satır 1, Sütun 1 | GP2  | `Ctrl + C`            |
+| Satır 1, Sütun 2 | GP3  | `Ctrl + V`            |
+| Satır 1, Sütun 3 | GP4  | `Ctrl + X`            |
+| Satır 2, Sütun 1 | GP5  | `Alt + Tab`           |
+| Satır 2, Sütun 2 | GP6  | `Win + D`             |
+| Satır 2, Sütun 3 | GP7  | `Win + L`             |
+| Satır 3, Sütun 1 | GP8  | `Ctrl + Alt + T`      |
+| Satır 3, Sütun 2 | GP9  | `Ctrl + Shift + N`    |
+| Satır 3, Sütun 3 | GP10 | `Ctrl + Z`            |
 
 ```
-Top of macropad
+Macropad'in üst kısmı
 ┌─────┬─────┬─────┐
 │ GP2 │ GP3 │ GP4 │
 ├─────┼─────┼─────┤
@@ -27,11 +27,11 @@ Top of macropad
 └─────┴─────┴─────┘
 ``` 
 
-## Wiring instructions
+## Kablolama talimatları
 
-1. Connect one leg of each push button to its assigned GPIO pin.
-2. Connect the other leg of every button to a common ground rail.
-3. Keep wire runs short or twisted in pairs to minimize noise.
-4. Leave the Pico’s onboard LED (GP25) and SWD pins untouched to avoid conflicts.
+1. Her basmalı düğmenin bir bacağını atanan GPIO pinine bağlayın.
+2. Her düğmenin diğer bacağını ortak bir toprak rayına bağlayın.
+3. Gürültüyü en aza indirmek için kablo bağlantılarını kısa tutun veya çiftler halinde bükülerek kullanın.
+4. Çakışmayı önlemek için Pico'nun yerleşik LED'ini (GP25) ve SWD pinlerini dokunulmamış bırakın.
 
-Modifying the layout is as simple as editing `BUTTON_GPIOS` in `src/macros.c` and updating this document accordingly.
+Düzeni değiştirmek, `src/macros.c` dosyasındaki `BUTTON_GPIOS` değerini düzenlemek ve bu dokümanı buna göre güncellemek kadar basittir.

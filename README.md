@@ -1,17 +1,17 @@
 # Pico HID Macropad Firmware
 
-Custom 3x3 (nine key) macropad firmware for the Raspberry Pi Pico that exposes a USB HID keyboard device. Each physical key triggers a predefined shortcut (e.g. `Ctrl+C`, `Alt+Tab`, `Win+D`) with clean debouncing so the device behaves like a plug-and-play keyboard on Windows, macOS, and Linux.
+Raspberry Pi Pico için özel 3x3 (dokuz tuş) macropad firmware'i. USB HID klavye cihazı olarak çalışır. Her fiziksel tuş önceden tanımlanmış bir kısayolu (örn. `Ctrl+C`, `Alt+Tab`, `Win+D`) tetikler ve temiz debouncing ile Windows, macOS ve Linux'ta tak-çalıştır klavye gibi davranır.
 
-## Features
+## Özellikler
 
-- Written in C using the official Pico SDK and TinyUSB HID stack
-- Nine independent GPIO inputs arranged as a 3×3 grid
-- Built-in debouncing (15&nbsp;ms) to prevent chattering
-- Configurable shortcut mapping via `src/macros.c`
-- USB HID keyboard descriptor for true plug‑and‑play behavior (no drivers needed)
-- Thorough documentation covering hardware pinout, build, flash, and customization steps
+- Resmi Pico SDK ve TinyUSB HID yığını kullanılarak C ile yazılmıştır
+- 3×3 ızgara şeklinde düzenlenmiş dokuz bağımsız GPIO girişi
+- Yerleşik debouncing (15&nbsp;ms) ile tıkırdamayı önler
+- `src/macros.c` dosyası üzerinden yapılandırılabilir kısayol eşlemeleri
+- Gerçek tak-çalıştır davranış için USB HID klavye tanımlayıcısı (sürücü gerekmez)
+- Donanım pin çıkışları, derleme, yükleme ve özelleştirme adımlarını kapsayan kapsamlı dokümantasyon
 
-## Repository layout
+## Depo düzeni
 
 ```
 .
@@ -28,42 +28,42 @@ Custom 3x3 (nine key) macropad firmware for the Raspberry Pi Pico that exposes a
 └── README.md
 ```
 
-## Hardware requirements
+## Donanım gereksinimleri
 
 - Raspberry Pi Pico / Pico W (RP2040)
-- 9 × momentary push buttons (normally open)
-- Wiring to connect each button between its GPIO pin and ground (internal pull-ups are enabled in firmware)
-- USB cable (for power, programming, and HID communication)
+- 9 × anlık basmalı düğme (normalde açık)
+- Her düğmeyi GPIO pini ile toprak arasına bağlamak için kablolama (dahili pull-up'lar firmware'de etkinleştirilmiştir)
+- USB kablosu (güç, programlama ve HID iletişimi için)
 
-## Pin mapping
+## Pin eşlemesi
 
-Buttons are mapped row-by-row (top-left to bottom-right):
+Düğmeler satır-satır eşlenir (sol üstten sağ alta):
 
-| Logical position | GPIO | Default shortcut |
-| ---------------- | ---- | ---------------- |
-| Row 1, Col 1     | GP2  | `Ctrl + C`       |
-| Row 1, Col 2     | GP3  | `Ctrl + V`       |
-| Row 1, Col 3     | GP4  | `Ctrl + X`       |
-| Row 2, Col 1     | GP5  | `Alt + Tab`      |
-| Row 2, Col 2     | GP6  | `Win + D`        |
-| Row 2, Col 3     | GP7  | `Win + L`        |
-| Row 3, Col 1     | GP8  | `Ctrl + Alt + T` |
-| Row 3, Col 2     | GP9  | `Ctrl + Shift + N` |
-| Row 3, Col 3     | GP10 | `Ctrl + Z`       |
+| Mantıksal konum | GPIO | Varsayılan kısayol |
+| --------------- | ---- | ------------------ |
+| Satır 1, Sütun 1 | GP2  | `Ctrl + C`       |
+| Satır 1, Sütun 2 | GP3  | `Ctrl + V`       |
+| Satır 1, Sütun 3 | GP4  | `Ctrl + X`       |
+| Satır 2, Sütun 1 | GP5  | `Alt + Tab`      |
+| Satır 2, Sütun 2 | GP6  | `Win + D`        |
+| Satır 2, Sütun 3 | GP7  | `Win + L`        |
+| Satır 3, Sütun 1 | GP8  | `Ctrl + Alt + T` |
+| Satır 3, Sütun 2 | GP9  | `Ctrl + Shift + N` |
+| Satır 3, Sütun 3 | GP10 | `Ctrl + Z`       |
 
-See [`docs/pin_mapping.md`](docs/pin_mapping.md) for diagrams and wiring notes.
+Diyagramlar ve kablolama notları için [`docs/pin_mapping.md`](docs/pin_mapping.md) dosyasına bakın.
 
-## Building the firmware
+## Firmware'i derleme
 
-1. **Install prerequisites**
+1. **Ön koşulları yükleyin**
    - CMake ≥ 3.13
-   - ARM GCC toolchain (e.g. `gcc-arm-none-eabi`)
-   - Pico SDK dependencies (TinyUSB included)
+   - ARM GCC araç zinciri (örn. `gcc-arm-none-eabi`)
+   - Pico SDK bağımlılıkları (TinyUSB dahil)
 
-2. **Obtain the Pico SDK**
-   - Either export `PICO_SDK_PATH` to an existing checkout, **or** let CMake download it automatically (the bundled `pico_sdk_import.cmake` uses `FetchContent` when the environment variable is unset).
+2. **Pico SDK'yı edinin**
+   - Mevcut bir checkout'a `PICO_SDK_PATH` export edin, **veya** CMake'in otomatik olarak indirmesine izin verin (paketlenmiş `pico_sdk_import.cmake`, ortam değişkeni ayarlanmadığında `FetchContent` kullanır).
 
-3. **Configure and build**
+3. **Yapılandırın ve derleyin**
 
    ```bash
    cd /path/to/repo
@@ -71,34 +71,34 @@ See [`docs/pin_mapping.md`](docs/pin_mapping.md) for diagrams and wiring notes.
    cmake --build build
    ```
 
-   Successful builds produce `.uf2`, `.elf`, and `.bin` artifacts inside `build/`.
+   Başarılı derlemeler `build/` klasörü içinde `.uf2`, `.elf` ve `.bin` dosyaları üretir.
 
-4. **Flash to the Pico**
-   - Hold the `BOOTSEL` button while connecting the Pico via USB.
-   - A mass-storage device named `RPI-RP2` appears.
-   - Copy `build/pico_hid_macropad.uf2` onto the drive. The board reboots and starts acting as a macropad immediately.
+4. **Pico'ya yükleyin**
+   - Pico'yu USB ile bağlarken `BOOTSEL` düğmesini basılı tutun.
+   - `RPI-RP2` adlı bir yığın depolama aygıtı görünür.
+   - `build/pico_hid_macropad.uf2` dosyasını sürücüye kopyalayın. Kart yeniden başlar ve hemen macropad olarak çalışmaya başlar.
 
-## Customizing shortcuts
+## Kısayolları özelleştirme
 
-- Edit `src/macros.c` to change the GPIO assignments or key combinations. Each entry defines:
-  - `BUTTON_GPIOS[]`: physical pin used for that button
-  - `BUTTON_LABELS[]`: human-readable name (optional but useful for documentation)
-  - `MACRO_BINDINGS[]`: modifier bitmask plus up to three key codes (see `include/macros.h`)
-- Supported modifier flags and key codes are defined by TinyUSB (`KEYBOARD_MODIFIER_*`, `HID_KEY_*`).
-- Rebuild and flash after editing to apply the new layout.
+- GPIO atamalarını veya tuş kombinasyonlarını değiştirmek için `src/macros.c` dosyasını düzenleyin. Her girdi şunları tanımlar:
+  - `BUTTON_GPIOS[]`: o düğme için kullanılan fiziksel pin
+  - `BUTTON_LABELS[]`: okunabilir isim (isteğe bağlı ancak dokümantasyon için kullanışlı)
+  - `MACRO_BINDINGS[]`: değiştirici bitmask artı üç tuş koduna kadar (bkz. `include/macros.h`)
+- Desteklenen değiştirici bayrakları ve tuş kodları TinyUSB tarafından tanımlanır (`KEYBOARD_MODIFIER_*`, `HID_KEY_*`).
+- Düzenlemeden sonra yeni düzeni uygulamak için yeniden derleyin ve yükleyin.
 
-## Debouncing strategy
+## Debouncing stratejisi
 
-Every button is sampled continuously with a 1&nbsp;ms loop. A change must remain stable for at least 15&nbsp;ms before the firmware enqueues a press/release event. This effectively filters switch bounce while preserving responsive input.
+Her düğme 1&nbsp;ms döngü ile sürekli olarak örneklenir. Bir değişikliğin en az 15&nbsp;ms boyunca kararlı kalması gerekir ki firmware bir basma/bırakma olayını kuyruğa alabilsin. Bu, duyarlı girişi korurken anahtar sıçramasını etkili bir şekilde filtreler.
 
-## Troubleshooting
+## Sorun giderme
 
-| Issue | Resolution |
-| ----- | ---------- |
-| Device not detected | Ensure the Pico is flashed correctly and that the USB cable carries data. Rebuild the firmware if necessary. |
-| Buttons trigger multiple times | Verify proper wiring to ground and that only one side of the button connects to the designated GPIO. Debounce logic is already enabled; stray wiring noise is the most common culprit. |
-| Need different pins or shortcuts | Update `src/macros.c` and rebuild. Do not forget to adjust the documentation tables if the layout changes. |
+| Sorun | Çözüm |
+| ----- | ----- |
+| Cihaz algılanmıyor | Pico'nun doğru şekilde yüklendiğinden ve USB kablosunun veri taşıdığından emin olun. Gerekirse firmware'i yeniden derleyin. |
+| Düğmeler birden çok kez tetikleniyor | Toprak bağlantısının doğru olduğunu ve düğmenin yalnızca bir tarafının belirlenen GPIO'ya bağlı olduğunu doğrulayın. Debounce mantığı zaten etkindir; başıboş kablolama gürültüsü en yaygın suçludur. |
+| Farklı pinler veya kısayollar gerekli | `src/macros.c` dosyasını güncelleyin ve yeniden derleyin. Düzen değişirse dokümantasyon tablolarını ayarlamayı unutmayın. |
 
-## License
+## Lisans
 
-Provided under the MIT license (see repository history). Feel free to adapt the firmware for your own macropad builds.
+MIT lisansı altında sağlanmıştır (depo geçmişine bakın). Firmware'i kendi macropad projeleriniz için uyarlamaktan çekinmeyin.
