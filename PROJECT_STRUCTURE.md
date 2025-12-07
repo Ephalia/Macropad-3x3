@@ -12,7 +12,8 @@ Bu dokümantasyon, Arduino Pro Micro 3x3 HID Macropad projesinin dosya ve dizin 
 ├── .gitignore                         # Git İgnore Dosyası
 │
 ├── docs/                              # Dokümantasyon Klasörü
-│   ├── pin_mapping.md                 # Detaylı Pin Eşlemesi
+│   ├── pin_mapping.md                 # Detaylı Pin Eşlemesi (D0-D8)
+│   ├── WIRING_GUIDE.md                # Kablolama Rehberi (Diyotsuz + Diyötlü)
 │   ├── ARDUINO_IDE_SETUP.md          # Arduino IDE Kurulum Rehberi
 │   └── TROUBLESHOOTING.md            # Sorun Giderme Kılavuzu
 │
@@ -29,12 +30,14 @@ Bu dokümantasyon, Arduino Pro Micro 3x3 HID Macropad projesinin dosya ve dizin 
 #### `HID_Macropad_3x3.ino`
 - **Amaç**: Ana Arduino firmware sketch dosyası
 - **İçerik**:
-  - Pin konfigürasyonu (3x3 buton düzeni)
+  - Pin konfigürasyonu (3x3 buton düzeni, D0-D8 pinleri)
   - Makro tuş tanımları (9 tuş kombinasyonu)
-  - Debouncing implementasyonu (15ms)
+  - Debouncing implementasyonu (20ms, ayarlanabilir 20-50ms)
   - USB HID haberleşme kodu
+  - Hem diyotsuz hem diyötlü kurulum desteği
 - **Kullanım**: Arduino IDE'de açılıp Arduino Pro Micro'ya yüklenir
 - **Özelleştirme**: Tuş kombinasyonları bu dosyada `MACRO_BINDINGS` dizisinde değiştirilir
+- **Donanım Esnekliği**: Aynı firmware hem diyotsuz hem diyötlü kurulumlarla çalışır
 
 #### `README.md`
 - **Amaç**: Proje ana dokümantasyonu (Türkçe)
@@ -64,15 +67,32 @@ Bu dokümantasyon, Arduino Pro Micro 3x3 HID Macropad projesinin dosya ve dizin 
 - **Amaç**: Detaylı pin eşlemesi ve kablolama şemaları
 - **İçerik**:
   - Arduino Pro Micro çip referansı
-  - Pinout diyagramları (ASCII art)
+  - Pinout diyagramları (ASCII art, D0-D8 pinleri)
   - Dijital ve analog pin tabloları
   - Makropad pin atama diyagramı
-  - Kablolama şemaları
+  - Diyotsuz ve diyötlü kablolama şemaları
   - Tuş kombinasyonu referansı
-  - Debounce implementasyon detayları
+  - Debounce implementasyon detayları (20ms)
   - Sürücü gereksinim bilgisi
   - Kustomizasyon örnekleri
+  - Diyot yön kontrolü ve test etme
 - **Hedef Kitle**: Donanım kurulumu yapan veya pin konfigürasyonunu değiştirmek isteyen
+
+#### `WIRING_GUIDE.md`
+- **Amaç**: Adım adım kablolama rehberi (Diyotsuz ve Diyötlü kurulumlar için)
+- **İçerik**:
+  - Gerekli malzeme listesi (her iki kurulum için)
+  - Diyotsuz kurulum avantaj/dezavantajları ve şema
+  - Diyötlü kurulum avantaj/dezavantajları ve şema
+  - 1N4148 diyot tanıma ve test etme rehberi
+  - Adım adım montaj talimatları (breadboard)
+  - Detaylı kablolama tabloları
+  - Bağlantı testi prosedürleri
+  - Sorun giderme (kablolama spesifik)
+  - PCB'ye geçiş ipuçları
+  - 3D printable kasa önerileri
+- **Hedef Kitle**: İlk kez donanım kurulumu yapan kullanıcılar, başlangıç seviyesi
+- **Özel Not**: Bu belge, yeni başlayanlar için en kapsamlı kablolama kaynağıdır
 
 #### `ARDUINO_IDE_SETUP.md`
 - **Amaç**: Arduino IDE kurulum ve firmware yükleme adımları

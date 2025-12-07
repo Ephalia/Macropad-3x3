@@ -1,100 +1,240 @@
-# Changelog - Arduino Pro Micro 3x3 Macropad Firmware
+# Changelog - Arduino Pro Micro 3x3 HID Macropad
 
-## Version 2.0 - Media Control Update
+All notable changes to this project will be documented in this file.
 
-### Değişiklikler
+## [2.0.0] - 2024 - D0-D8 Pin Configuration + Diode Support
 
-#### 🎯 Ana Firmware Güncellemesi
-- **HID-Project kütüphanesi entegrasyonu**: Artık gerçek medya kontrol tuşları destekleniyor
-- **Yeni tuş konfigürasyonu** (ticket gereksinimlerine göre):
-  - **Satır 1**: Ses Azalt | Ses Arttır | Sesi Kapat
-  - **Satır 2**: Önceki | Play/Pause | Sonraki
-  - **Satır 3**: Alt+F4 | Win+D | Win+L
+### 🎯 Major Changes
 
-#### 🔧 Teknik Değişiklikler
-- `#include "Keyboard.h"` → `#include "HID-Project.h"`
-- Yeni `MacroType` enum eklendi (`MACRO_KEYBOARD`, `MACRO_CONSUMER`)
-- `MacroKey` struct güncellendi (type field eklendi)
-- `executeKeyStroke()` fonksiyonu hem klavye hem de medya kontrollerini destekliyor
-- `Consumer.begin()` başlatma eklendi
-- Medya tuşları için `Consumer.write()` kullanımı
+#### Pin Configuration Update
+- **Changed**: Pin mapping from scattered pins (D4, D6, D10, D16, D14, D15, D9, D5, D3) to sequential pins (D0-D8)
+- **Benefit**: Easier to remember, cleaner wiring, more logical layout
+- **New Pin Mapping**:
+  - D0 (RX): Volume Down
+  - D1 (TX): Volume Up
+  - D2 (SDA): Mute
+  - D3: Previous
+  - D4: Play/Pause
+  - D5: Next
+  - D6: Alt+F4
+  - D7: Windows+D
+  - D8: Windows+L
 
-#### 📚 Dokümantasyon Güncellemeleri
+#### Diode Support Added
+- **New**: Firmware now supports BOTH diode-less and diode configurations
+- **Important**: Same firmware works for both setups - no code changes needed
+- **Diode Type**: 1N4148 (9 pieces for diode configuration)
+- **Added**: Comprehensive documentation for both setup options
 
-**README.md**:
-- HID-Project kütüphanesi kurulum talimatları eklendi
-- Pin mapping tablosu yeni tuş kombinasyonlarıyla güncellendi
-- Medya kontrol tuşları listesi eklendi
-- Örnek konfigürasyonlar yeni macro yapısına göre güncellendi
-- Kaynaklar bölümüne HID-Project linkleri eklendi
+### ✨ New Features
 
-**docs/pin_mapping.md**:
-- Dijital pin fonksiyon tablosu güncellendi
-- Varsayılan makrolar tablosu yeni konfigürasyonla güncellendi
-- Tuş kombinasyonu örnekleri yeni yapıya uyarlandı
-- HID-Project kütüphanesi referansları eklendi
+1. **Dual Hardware Support**
+   - Diode-less setup (simple, fast, low-cost)
+   - Diode setup (professional, ghost-proof, safe)
+   - Same firmware works for both
 
-**docs/ARDUINO_IDE_SETUP.md**:
-- HID-Project kütüphanesi kurulum adımı eklendi (Adım 2)
-- Adım numaraları güncellendi
-- Kaynaklar bölümüne HID-Project linkleri eklendi
+2. **Enhanced Documentation**
+   - New `docs/WIRING_GUIDE.md` - Step-by-step wiring guide
+   - Updated `README.md` - Comprehensive documentation with both setup options
+   - Updated `docs/pin_mapping.md` - New pin mapping and diode wiring diagrams
+   - Turkish language support throughout
 
-**examples/**:
-- `example_productivity.ino`: Yeni MacroKey yapısına uyarlandı
-- `example_gaming.ino`: Yeni MacroKey yapısına uyarlandı
-- `example_media.ino`: Gerçek medya kontrolleri kullanacak şekilde güncellendi
+3. **Debounce Configuration Update**
+   - Changed from 15ms to 20ms default
+   - Adjustable from 20-50ms
+   - Better stability with various switch types
 
-### Kabul Kriterleri - Kontrol Listesi
+### 📝 Documentation Updates
 
-✅ **1. Firmware Arduino IDE'de başarıyla derlenir**
-   - HID-Project kütüphanesi ile uyumlu kod
+#### README.md
+- Added hardware setup options section
+- Added diode-less vs diode comparison table
+- Added detailed ASCII art wiring diagrams for both setups
+- Added diode direction identification guide
+- Added switching guide (diode-less ↔ diode)
+- Updated pin mapping table (D0-D8)
+- Updated troubleshooting section
 
-✅ **2. Arduino Pro Micro'ya başarıyla yüklenebilir**
-   - ATmega32U4 uyumlu
+#### docs/pin_mapping.md
+- Complete rewrite for D0-D8 configuration
+- Added diode-less wiring schema
+- Added diode wiring schema
+- Added 1N4148 diode identification guide
+- Added multimeter testing instructions
+- Updated pinout diagram
+- Added D0/D1 serial port conflict warning
 
-✅ **3. Tüm 9 tuş kombinasyonu doğru şekilde çalışır**
-   - 3 ses kontrolü, 3 medya kontrolü, 3 sistem komutu
+#### docs/WIRING_GUIDE.md (NEW)
+- Comprehensive step-by-step wiring guide
+- Material requirements list
+- Diode-less setup instructions
+- Diode setup instructions
+- Physical assembly steps for breadboard
+- Connection testing procedures
+- Troubleshooting for wiring issues
+- PCB transition tips
+- 3D printable case suggestions
 
-✅ **4. Ses kontrolleri sistemde ses ayarlarını kontrol eder**
-   - MEDIA_VOLUME_DOWN, MEDIA_VOLUME_UP, MEDIA_VOLUME_MUTE
+#### IMPLEMENTATION_SUMMARY.md
+- Updated for version 2.0
+- Added all 10 acceptance criteria
+- Added diode support documentation
+- Updated technical specifications
+- Added "new features" section
 
-✅ **5. Media kontrolleri müzik/video oynatıcısında çalışır**
-   - MEDIA_PREVIOUS, MEDIA_PLAY_PAUSE, MEDIA_NEXT
+#### PROJECT_STRUCTURE.md
+- Added WIRING_GUIDE.md entry
+- Updated pin_mapping.md description
+- Updated HID_Macropad_3x3.ino description
 
-✅ **6. Sistem komutları doğru şekilde tetiklenir**
-   - Alt+F4, Windows+D, Windows+L
+### 🔧 Technical Changes
 
-✅ **7. HID rapor gönderimi stabil çalışır**
-   - Consumer.write() ve Keyboard.press()/releaseAll()
+#### Firmware (HID_Macropad_3x3.ino)
+```cpp
+// Old pin configuration
+const int BUTTON_PINS[3][3] = {
+  { 4,  6, 10 },
+  { 16, 14, 15 },
+  { 9, 5, 3 }
+};
 
-✅ **8. Kod açık ve bakımı kolay olacak şekilde düzenlenmiş**
-   - Enum tipler, açıklayıcı yorumlar, modüler yapı
+// New pin configuration
+const int BUTTON_PINS[3][3] = {
+  { 0,  1,  2 },  // Row 1: D0, D1, D2
+  { 3,  4,  5 },  // Row 2: D3, D4, D5
+  { 6,  7,  8 }   // Row 3: D6, D7, D8
+};
+```
 
-✅ **9. README ile kurulum, pin mapping ve kullanım talimatları yer alır**
-   - Tüm dokümantasyon Türkçe olarak güncellendi
+#### Debounce Time
+```cpp
+// Old: 15ms
+const unsigned long DEBOUNCE_TIME = 15;
 
-### Gerekli Kütüphane
+// New: 20ms (adjustable 20-50ms)
+const unsigned long DEBOUNCE_TIME = 20;
+```
 
-**HID-Project by NicoHood** (v2.8.4 veya üzeri)
-- Arduino Library Manager'dan yüklenebilir
-- GitHub: https://github.com/NicoHood/HID
-- Dokümantasyon: https://github.com/NicoHood/HID/wiki
+#### Comments
+- Added diode support information in file header
+- Added wiring options (diode-less and diode)
+- Updated pin configuration comments
 
-### Uyumluluk
+### 🛠️ Hardware Compatibility
 
-- ✅ Windows 10/11
-- ✅ macOS (tüm versiyonlar)
-- ✅ Linux (Ubuntu, Debian, Fedora, vb.)
+**Both configurations work with the same firmware:**
+- **Diode-less**: Switch Pin 1 → GPIO, Switch Pin 2 → GND
+- **Diode**: Switch Pin 1 → Diode Cathode (-), Diode Anode (+) → GPIO, Switch Pin 2 → GND
 
-### Notlar
+**INPUT_PULLUP mode** handles both configurations automatically.
 
-- Önceki versiyon sadece klavye kombinasyonlarını destekliyordu
-- Bu versiyon gerçek HID Consumer Control (medya) tuşlarını destekliyor
-- Plug-and-play - sürücü gerektirmez
-- Tüm popüler medya oynatıcılarla uyumlu (Spotify, VLC, YouTube, vb.)
+### 📊 Comparison: Old vs New
+
+| Feature | Version 1.0 | Version 2.0 |
+|---------|-------------|-------------|
+| Pin Configuration | D4,D6,D10,D16,D14,D15,D9,D5,D3 | D0,D1,D2,D3,D4,D5,D6,D7,D8 |
+| Pin Layout | Scattered | Sequential |
+| Diode Support | No | Yes (optional) |
+| Debounce Time | 15ms (fixed) | 20ms (adjustable 20-50ms) |
+| Wiring Guide | Basic | Comprehensive step-by-step |
+| Setup Options | 1 (diode-less only) | 2 (diode-less + diode) |
+| Documentation | Standard | Extensive + Turkish |
+
+### ⚠️ Breaking Changes
+
+**IMPORTANT**: Pin configuration has changed. If you're upgrading from version 1.0:
+
+1. **Re-wire your macropad** according to the new D0-D8 pin mapping
+2. **Update firmware** to version 2.0
+3. **No code changes needed** for diode-less to diode transition
+
+### 🎓 Migration Guide
+
+#### From Version 1.0 to 2.0
+
+**Step 1: Backup**
+- Save your current configuration
+- Note any custom macro bindings
+
+**Step 2: Re-wire**
+- Disconnect Arduino from USB
+- Change wiring according to new pin mapping:
+  - Old D4 → New D0
+  - Old D6 → New D1
+  - Old D10 → New D2
+  - Old D16 → New D3
+  - Old D14 → New D4
+  - Old D15 → New D5
+  - Old D9 → New D6
+  - Old D5 → New D7
+  - Old D3 → New D8
+
+**Step 3: Upload New Firmware**
+- Open HID_Macropad_3x3.ino (version 2.0)
+- Upload to Arduino Pro Micro
+- Test all switches
+
+**Step 4 (Optional): Add Diodes**
+- If you want diode protection, follow the diode setup guide in docs/WIRING_GUIDE.md
+- No firmware changes needed
+
+### 🐛 Bug Fixes
+
+- Improved debounce stability (15ms → 20ms)
+- Added D0/D1 serial port conflict warning
+- Clarified pull-up resistor usage (internal)
+
+### 📚 New Documentation Files
+
+1. `docs/WIRING_GUIDE.md` - Complete wiring guide for both setups
+2. Updated all existing documentation for version 2.0
+
+### 🔮 Future Plans
+
+- Matrix keyboard support (when using diode configuration)
+- Additional example configurations
+- PCB design files
+- 3D printable case design
 
 ---
 
-**Tarih**: 2024
-**Versiyon**: 2.0
-**Yazar**: Arduino Pro Micro Macropad Geliştirme Takımı
+## [1.0.0] - 2024 - Initial Release
+
+### Initial Features
+
+- Arduino Pro Micro 3x3 HID Macropad firmware
+- 9 button support (3x3 grid)
+- USB HID Keyboard support
+- Media controls (Volume, Play/Pause, Next/Previous)
+- System shortcuts (Alt+F4, Win+D, Win+L)
+- 15ms debouncing
+- Plug-and-play (no driver required)
+- Turkish documentation
+
+### Initial Pin Configuration
+
+- D4, D6, D10 (Row 1)
+- D16, D14, D15 (Row 2)
+- D9, D5, D3 (Row 3)
+
+### Initial Documentation
+
+- README.md (Turkish)
+- docs/pin_mapping.md
+- docs/ARDUINO_IDE_SETUP.md
+- docs/TROUBLESHOOTING.md
+- examples/ (3 example configurations)
+
+---
+
+**Legend:**
+- 🎯 Major Changes
+- ✨ New Features
+- 📝 Documentation Updates
+- 🔧 Technical Changes
+- 🛠️ Hardware Compatibility
+- 📊 Comparison
+- ⚠️ Breaking Changes
+- 🎓 Migration Guide
+- 🐛 Bug Fixes
+- 🔮 Future Plans
