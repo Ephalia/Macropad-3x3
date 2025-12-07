@@ -11,16 +11,29 @@
  * Satır 1: Ses Azalt | Ses Arttır | Sesi Kapat
  * Satır 2: Önceki | Play/Pause | Sonraki
  * Satır 3: Alt+F4 | Win+D | Win+L
+ * 
+ * DONANIM KURULUM SEÇENEKLERİ:
+ * Bu firmware hem diyotsuz hem de diyötlü kurulumlarla uyumludur.
+ * 
+ * SEÇENEK 1 - DİYOTSUZ (Basit):
+ *   Switch Pin1 --> GPIO Pin (D0-D8)
+ *   Switch Pin2 --> GND
+ * 
+ * SEÇENEK 2 - DİYÖTLÜ (Profesyonel):
+ *   Switch Pin1 --> 1N4148 Diyot Katodu (-)
+ *   Diyot Anodu (+) --> GPIO Pin (D0-D8)
+ *   Switch Pin2 --> GND
  */
 
 #include "HID-Project.h"
 
 // ===== PIN KONFIGÜRASYONU =====
 // Arduino Pro Micro düğmelerinin GPIO pin atamalarını tanımlayın
+// Sıralı pin yapısı: D0, D1, D2, D3, D4, D5, D6, D7, D8
 const int BUTTON_PINS[3][3] = {
-  { 4,  6, 10 },  // Satır 1: D4 (A6), D6 (A7), D10
-  { 16, 14, 15 }, // Satır 2: D16 (A2), D14 (A0), D15 (A1)
-  { 9, 5, 3 }     // Satır 3: D9, D5, D3
+  { 0,  1,  2 },  // Satır 1: D0 (RX), D1 (TX), D2 (SDA)
+  { 3,  4,  5 },  // Satır 2: D3, D4, D5
+  { 6,  7,  8 }   // Satır 3: D6, D7, D8
 };
 
 // Makro tipi tanımı
@@ -54,7 +67,7 @@ const MacroKey MACRO_BINDINGS[3][3] = {
 };
 
 // ===== DEBOUNCING KONFİGÜRASYONU =====
-const unsigned long DEBOUNCE_TIME = 15;  // ms cinsinden debounce süresi (15ms)
+const unsigned long DEBOUNCE_TIME = 20;  // ms cinsinden debounce süresi (20ms - ayarlanabilir 20-50ms arası)
 const unsigned long SCAN_INTERVAL = 1;   // ms cinsinden tarama aralığı
 
 // Tuş durumları (debouncing için gerekli)
