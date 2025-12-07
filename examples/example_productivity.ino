@@ -10,19 +10,19 @@
 
 const MacroKey MACRO_BINDINGS[3][3] = {
   // Satır 1: Temel Editörler (Kes/Kopyala/Yapıştır)
-  { { KEY_LEFT_CTRL, 'x', 0, 0 },          // Kes
-    { KEY_LEFT_CTRL, 'c', 0, 0 },          // Kopyala
-    { KEY_LEFT_CTRL, 'v', 0, 0 } },        // Yapıştır
+  { { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'x', 0, 0 },          // Kes
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'c', 0, 0 },          // Kopyala
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'v', 0, 0 } },        // Yapıştır
   
   // Satır 2: Dosya Operasyonları
-  { { KEY_LEFT_CTRL, 's', 0, 0 },          // Kaydet
-    { KEY_LEFT_CTRL, KEY_LEFT_SHIFT, 's', 0 }, // Farklı kaydet
-    { KEY_LEFT_CTRL, 'n', 0, 0 } },        // Yeni dosya
+  { { MACRO_KEYBOARD, KEY_LEFT_CTRL, 's', 0, 0 },          // Kaydet
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 's', 0, 0 }, // Farklı kaydet
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'n', 0, 0 } },        // Yeni dosya
   
   // Satır 3: Geri Al / İleri Al / Redo
-  { { KEY_LEFT_CTRL, 'z', 0, 0 },          // Geri Al (Undo)
-    { KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 'z', 0, 0 }, // İleri Al (Redo)
-    { KEY_LEFT_CTRL, 'a', 0, 0 } }         // Tümünü Seç
+  { { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'z', 0, 0 },          // Geri Al (Undo)
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 'z', 0, 0 }, // İleri Al (Redo)
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'a', 0, 0 } }         // Tümünü Seç
 };
 
 /*

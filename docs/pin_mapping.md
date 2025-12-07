@@ -30,19 +30,19 @@ Arduino Pro Micro ATmega32U4 mikrodenetleyicisi taşıdığı için, dijital ve 
 | D1 | TX | UART0 | Serial haberleşme |
 | D2 | SDA | I2C | I2C veri hattı |
 | D3 | SCL | I2C | I2C saat hattı |
-| D4 | Makropad | A6 | **Tuş 1,1** - Ctrl+C |
-| D5 | Makropad | A9 | **Tuş 3,2** - Ctrl+Shift+N |
-| D6 | Makropad | A7 | **Tuş 1,2** - Ctrl+V |
+| D4 | Makropad | A6 | **Tuş 1,1** - Ses Azalt |
+| D5 | Makropad | A9 | **Tuş 3,2** - Win+D |
+| D6 | Makropad | A7 | **Tuş 1,2** - Ses Arttır |
 | D7 | PWM | OCOA | PWM desteği |
 | D8 | PWM | OCOB | PWM desteği |
-| D9 | Makropad | OC1A | **Tuş 3,1** - Ctrl+Alt+T |
-| D10 | Makropad | OC1B | **Tuş 1,3** - Ctrl+X |
+| D9 | Makropad | OC1A | **Tuş 3,1** - Alt+F4 |
+| D10 | Makropad | OC1B | **Tuş 1,3** - Sesi Kapat |
 | D11 | MOSI | PWM | SPI/PWM |
 | D12 | MISO | PCINT | SPI |
 | D13 | SCK | LED | SPI/LED |
-| D14 | Makropad | A0 | **Tuş 2,2** - Win+D |
-| D15 | Makropad | A1 | **Tuş 2,3** - Win+L |
-| D16 | Makropad | A2 | **Tuş 2,1** - Alt+Tab |
+| D14 | Makropad | A0 | **Tuş 2,2** - Play/Pause |
+| D15 | Makropad | A1 | **Tuş 2,3** - Sonraki |
+| D16 | Makropad | A2 | **Tuş 2,1** - Önceki |
 
 ### Analog Pinler (ADC)
 
@@ -115,15 +115,15 @@ pull-up direnci gerekmez.
 
 | Satır | Sütun | Pin | Başlangıç Kombinasyonu | Açıklama |
 |-------|-------|-----|------------------------|----------|
-| 1 | 1 | D4 | `Ctrl + C` | Kopyala |
-| 1 | 2 | D6 | `Ctrl + V` | Yapıştır |
-| 1 | 3 | D10 | `Ctrl + X` | Kes |
-| 2 | 1 | D16 | `Alt + Tab` | Pencere geçişi |
-| 2 | 2 | D14 | `Windows + D` | Masaüstünü göster |
-| 2 | 3 | D15 | `Windows + L` | Kilitle |
-| 3 | 1 | D9 | `Ctrl + Alt + T` | Terminal (Linux) |
-| 3 | 2 | D5 | `Ctrl + Shift + N` | Yeni dosya (Dosya yöneticisi) |
-| 3 | 3 | D3 | `Ctrl + Z` | Geri Al |
+| 1 | 1 | D4 | **Volume Down** | Ses Azalt |
+| 1 | 2 | D6 | **Volume Up** | Ses Arttır |
+| 1 | 3 | D10 | **Mute** | Sesi Kapat |
+| 2 | 1 | D16 | **Previous** | Önceki Parça/Video |
+| 2 | 2 | D14 | **Play/Pause** | Oynat/Duraklat |
+| 2 | 3 | D15 | **Next** | Sonraki Parça/Video |
+| 3 | 1 | D9 | `Alt + F4` | Uygulamayı Kapat |
+| 3 | 2 | D5 | `Windows + D` | Masaüstüne Git |
+| 3 | 3 | D3 | `Windows + L` | Bilgisayarı Kilitle |
 
 ## Debounce Implementasyon Detayları
 
@@ -211,14 +211,18 @@ const int BUTTON_PINS[3][3] = {
 
 ### Tuş Kombinasyonlarını Değiştirme
 
-Makrolar `MACRO_BINDINGS` dizisinde tanımlanır. Örnek olarak, ilk buton yerine "Refresh" yapmak istiyorsanız:
+Makrolar `MACRO_BINDINGS` dizisinde tanımlanır. İki tür makro kullanabilirsiniz:
 
+**Klavye Kombinasyonu:**
 ```cpp
-// Önceki:
-{ { KEY_LEFT_CTRL, 'c', 0, 0 },          // Ctrl+C
+// Ctrl+R (Yenile)
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL, 'r', 0, 0 }
+```
 
-// Sonrası:
-{ { KEY_LEFT_CTRL, 'r', 0, 0 },          // Ctrl+R (Refresh)
+**Medya Kontrol Tuşu:**
+```cpp
+// Ses Arttır
+{ MACRO_CONSUMER, 0, MEDIA_VOLUME_UP, 0, 0 }
 ```
 
 ## Sorun Giderme Pin Sorunları
@@ -247,7 +251,8 @@ const unsigned long DEBOUNCE_TIME = 20;  // 20ms olarak artırın
 ## Ek Kaynaklar
 
 - [ATmega32U4 Datasheet](https://ww1.microchip.com/en-US/product/ATMEGA32U4)
-- [Arduino HID Kütüphanesi](https://github.com/arduino-libraries/HID)
+- [HID-Project Kütüphanesi (NicoHood)](https://github.com/NicoHood/HID)
+- [HID-Project Dokümantasyon](https://github.com/NicoHood/HID/wiki)
 - [Arduino Leonardo Pinout](https://www.arduino.cc/en/Hacking/PinMapping32u4)
 
 ---
