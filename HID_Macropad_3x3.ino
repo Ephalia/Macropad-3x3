@@ -2,45 +2,55 @@
  * Arduino Pro Micro 3x3 HID Macropad
  * 
  * ATmega32U4 tabanlı özel macropad firmware'i
- * USB HID klavye cihazı olarak çalışır
+ * USB HID klavye ve medya kontrol cihazı olarak çalışır
  * 
  * Donanım: Arduino Pro Micro
- * Kullanılan kütüphane: HID (yerleşik)
+ * Gerekli Kütüphane: HID-Project (Library Manager'dan yükleyiniz)
+ * 
+ * Tuş Konfigürasyonu:
+ * Satır 1: Ses Azalt | Ses Arttır | Sesi Kapat
+ * Satır 2: Önceki | Play/Pause | Sonraki
+ * Satır 3: Alt+F4 | Win+D | Win+L
  */
 
-#include "Keyboard.h"
+#include "HID-Project.h"
 
 // ===== PIN KONFIGÜRASYONU =====
 // Arduino Pro Micro düğmelerinin GPIO pin atamalarını tanımlayın
 const int BUTTON_PINS[3][3] = {
-  { 4,  6, 10 },  // Satır 1: A6 (D4), A7 (D6), D10
-  { 16, 14, 15 }, // Satır 2: A2 (D16), A0 (D14), A1 (D15)
+  { 4,  6, 10 },  // Satır 1: D4 (A6), D6 (A7), D10
+  { 16, 14, 15 }, // Satır 2: D16 (A2), D14 (A0), D15 (A1)
   { 9, 5, 3 }     // Satır 3: D9, D5, D3
 };
 
+// Makro tipi tanımı
+enum MacroType {
+  MACRO_KEYBOARD,    // Klavye tuş kombinasyonu
+  MACRO_CONSUMER     // Medya/Tüketici kontrol tuşu
+};
+
 // Tuş kombinasyon tanımları
-// Struktur: { modifier, key1, key2, key3 }
-// modifier: Ctrl, Shift, Alt, GUI bitwise kombinasyonu veya 0 (yok)
 struct MacroKey {
-  int modifier;
-  int key1;
-  int key2;
-  int key3;
+  MacroType type;      // Makro tipi (klavye veya medya)
+  int modifier;        // Modifier tuşlar (sadece MACRO_KEYBOARD için)
+  int key1;            // Ana tuş veya medya tuşu
+  int key2;            // İkinci tuş (opsiyonel)
+  int key3;            // Üçüncü tuş (opsiyonel)
 };
 
 const MacroKey MACRO_BINDINGS[3][3] = {
-  // Satır 1
-  { { KEY_LEFT_CTRL, 'c', 0, 0 },          // Ctrl+C
-    { KEY_LEFT_CTRL, 'v', 0, 0 },          // Ctrl+V
-    { KEY_LEFT_CTRL, 'x', 0, 0 } },        // Ctrl+X
-  // Satır 2
-  { { KEY_LEFT_ALT, KEY_TAB, 0, 0 },       // Alt+Tab
-    { KEY_LEFT_GUI, 'd', 0, 0 },           // Win+D
-    { KEY_LEFT_GUI, 'l', 0, 0 } },         // Win+L
-  // Satır 3
-  { { KEY_LEFT_CTRL | KEY_LEFT_ALT, 't', 0, 0 }, // Ctrl+Alt+T
-    { KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 'n', 0, 0 }, // Ctrl+Shift+N
-    { KEY_LEFT_CTRL, 'z', 0, 0 } }         // Ctrl+Z
+  // Satır 1: Ses Kontrolleri
+  { { MACRO_CONSUMER, 0, MEDIA_VOLUME_DOWN, 0, 0 },   // Ses Azalt
+    { MACRO_CONSUMER, 0, MEDIA_VOLUME_UP, 0, 0 },     // Ses Arttır
+    { MACRO_CONSUMER, 0, MEDIA_VOLUME_MUTE, 0, 0 } }, // Sesi Kapat
+  // Satır 2: Medya Kontrolleri
+  { { MACRO_CONSUMER, 0, MEDIA_PREVIOUS, 0, 0 },      // Önceki
+    { MACRO_CONSUMER, 0, MEDIA_PLAY_PAUSE, 0, 0 },    // Play/Pause
+    { MACRO_CONSUMER, 0, MEDIA_NEXT, 0, 0 } },        // Sonraki
+  // Satır 3: Sistem Komutları
+  { { MACRO_KEYBOARD, KEY_LEFT_ALT, KEY_F4, 0, 0 },   // Alt+F4 (Uygulamayı Kapat)
+    { MACRO_KEYBOARD, KEY_LEFT_GUI, 'd', 0, 0 },      // Win+D (Masaüstüne Git)
+    { MACRO_KEYBOARD, KEY_LEFT_GUI, 'l', 0, 0 } }     // Win+L (Bilgisayarı Kilitle)
 };
 
 // ===== DEBOUNCING KONFİGÜRASYONU =====
@@ -59,7 +69,7 @@ ButtonState buttons[3][3];
 
 // ===== SETUP FÖNKSİYONU =====
 void setup() {
-  // Seri haberleşeme başlatıl (isteğe bağlı, hata ayıklama için)
+  // Seri haberleşeme başlat (isteğe bağlı, hata ayıklama için)
   Serial.begin(9600);
   delay(1000);
   
@@ -76,10 +86,15 @@ void setup() {
     }
   }
   
-  // USB HID cihazını başlat
+  // USB HID cihazlarını başlat
   Keyboard.begin();
+  Consumer.begin();
   
   Serial.println("Macropad başarıyla başlatıldı!");
+  Serial.println("Tuş Yapılandırması:");
+  Serial.println("Satır 1: Ses Azalt | Ses Arttır | Sesi Kapat");
+  Serial.println("Satır 2: Önceki | Play/Pause | Sonraki");
+  Serial.println("Satır 3: Alt+F4 | Win+D | Win+L");
 }
 
 // ===== ANA DÖNGÜ =====
@@ -137,22 +152,30 @@ void updateButtonState(int row, int col, unsigned long now) {
 void executeKeyStroke(int row, int col) {
   MacroKey macro = MACRO_BINDINGS[row][col];
   
-  // Modifiyer tuşları işle
-  if (macro.modifier & KEY_LEFT_CTRL) Keyboard.press(KEY_LEFT_CTRL);
-  if (macro.modifier & KEY_LEFT_SHIFT) Keyboard.press(KEY_LEFT_SHIFT);
-  if (macro.modifier & KEY_LEFT_ALT) Keyboard.press(KEY_LEFT_ALT);
-  if (macro.modifier & KEY_LEFT_GUI) Keyboard.press(KEY_LEFT_GUI);
-  
-  // Ana tuşları işle
-  if (macro.key1) Keyboard.press(macro.key1);
-  if (macro.key2) Keyboard.press(macro.key2);
-  if (macro.key3) Keyboard.press(macro.key3);
-  
-  // Tüm tuşları aynı anda yayınla
-  Keyboard.releaseAll();
+  if (macro.type == MACRO_KEYBOARD) {
+    // Klavye tuş kombinasyonu
+    // Modifier tuşları işle
+    if (macro.modifier & KEY_LEFT_CTRL) Keyboard.press(KEY_LEFT_CTRL);
+    if (macro.modifier & KEY_LEFT_SHIFT) Keyboard.press(KEY_LEFT_SHIFT);
+    if (macro.modifier & KEY_LEFT_ALT) Keyboard.press(KEY_LEFT_ALT);
+    if (macro.modifier & KEY_LEFT_GUI) Keyboard.press(KEY_LEFT_GUI);
+    
+    // Ana tuşları işle
+    if (macro.key1) Keyboard.press(macro.key1);
+    if (macro.key2) Keyboard.press(macro.key2);
+    if (macro.key3) Keyboard.press(macro.key3);
+    
+    // Tüm tuşları aynı anda bırak
+    delay(50); // Kısa gecikme - tuş kombinasyonunun algılanması için
+    Keyboard.releaseAll();
+  } 
+  else if (macro.type == MACRO_CONSUMER) {
+    // Medya/Tüketici kontrol tuşu
+    Consumer.write(macro.key1);
+  }
   
   // Hata ayıklama çıktısı
-  Serial.print("Tuş kombinasyonu tetiklendi: Satır ");
+  Serial.print("Tuş tetiklendi: Satır ");
   Serial.print(row + 1);
   Serial.print(", Sütun ");
   Serial.println(col + 1);

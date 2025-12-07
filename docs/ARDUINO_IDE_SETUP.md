@@ -41,7 +41,19 @@ chmod +x arduino-ide_2.0.0_Linux_64bit.AppImage
 ./arduino-ide_2.0.0_Linux_64bit.AppImage
 ```
 
-## Adım 2: Arduino Pro Micro Kartı Desteğinin Eklenmesi
+## Adım 2: HID-Project Kütüphanesinin Kurulumu
+
+**ÖNEMLİ**: Bu firmware medya kontrolleri (ses ayarları, play/pause, vb.) için HID-Project kütüphanesine ihtiyaç duyar.
+
+1. Arduino IDE'yi açın
+2. **Taslak → Kütüphane Ekle → Kütüphaneleri Yönet** menüsüne gidin
+3. Arama kutusuna "HID-Project" yazın
+4. **HID-Project by NicoHood** kütüphanesini bulun
+5. En son versiyonu seçin (önerilen: v2.8.4 veya üzeri)
+6. **Yükle** butonuna tıklayın
+7. Yükleme tamamlanana kadar bekleyin
+
+## Adım 3: Arduino Pro Micro Kartı Desteğinin Eklenmesi
 
 ### Method 1: Arduino Leonardo Kartını Kullanma (En Kolay)
 
@@ -68,7 +80,7 @@ Arduino Pro Micro'nın özel desteğini Adafruit paketinden yükleyin:
 7. Arama kutusuna "pro micro" yazın
 8. "Adafruit AVR Boards" paketini bulun ve "Yükle" butonuna tıklayın
 
-## Adım 3: Kart ve Port Seçimi
+## Adım 4: Kart ve Port Seçimi
 
 1. Arduino IDE'yi açın
 2. **Araçlar → Kart** menüsünde:
@@ -84,14 +96,14 @@ Arduino Pro Micro'nın özel desteğini Adafruit paketinden yükleyin:
 
 **Not**: Port görüntülenmiyorsa, USB kablosunun düzgün takılı olduğundan emin olun ve Arduino IDE'yi yeniden başlatın.
 
-## Adım 4: Firmware Dosyasını Açma
+## Adım 5: Firmware Dosyasını Açma
 
 1. `HID_Macropad_3x3.ino` dosyasını Arduino IDE'de açın:
    - **Dosya → Aç** menüsü veya
    - Arduino IDE'ye dosya sürükleyin
 2. Kod düzenleyicide Ana IDE penceresinde görünür
 
-## Adım 5: Derleme Kontrolü (Verify)
+## Adım 6: Derleme Kontrolü (Verify)
 
 Kodun syntaksının doğru olduğunu kontrol etmek için:
 
@@ -105,7 +117,7 @@ Kodun syntaksının doğru olduğunu kontrol etmek için:
 
 **Hata oluşursa**: Çıkış penceresindeki hata mesajını okuyun. Genellikle syntax hataları içerir.
 
-## Adım 6: Arduino Pro Micro'ya Yükleme
+## Adım 7: Arduino Pro Micro'ya Yükleme
 
 ### Windows ve macOS:
 
@@ -229,7 +241,8 @@ Serial.print(variable);
 - **Arduino Resmi Sitesi**: https://www.arduino.cc
 - **Arduino Pro Micro Dokümantasyon**: https://www.arduino.cc/en/Main/ArduinoBoardProMicro
 - **Leonardo Pinout Referansı**: https://www.arduino.cc/en/Hacking/PinMapping32u4
-- **Arduino HID Kütüphanesi**: https://github.com/arduino-libraries/HID
+- **HID-Project Kütüphanesi**: https://github.com/NicoHood/HID
+- **HID-Project Dokümantasyon**: https://github.com/NicoHood/HID/wiki
 
 ---
 

@@ -10,19 +10,19 @@
 
 const MacroKey MACRO_BINDINGS[3][3] = {
   // Satır 1: Silah/Araç Seçimi (1-2-3 tuşları)
-  { { 0, '1', 0, 0 },                      // Silah 1
-    { 0, '2', 0, 0 },                      // Silah 2
-    { 0, '3', 0, 0 } },                    // Silah 3
+  { { MACRO_KEYBOARD, 0, '1', 0, 0 },                      // Silah 1
+    { MACRO_KEYBOARD, 0, '2', 0, 0 },                      // Silah 2
+    { MACRO_KEYBOARD, 0, '3', 0, 0 } },                    // Silah 3
   
   // Satır 2: Hızlı Aksiyon Tuşları (Q-E-R)
-  { { 0, 'q', 0, 0 },                      // Yetenekler/Aksiyon Q
-    { 0, 'e', 0, 0 },                      // Yetenekler/Aksiyon E
-    { 0, 'r', 0, 0 } },                    // Yeniden yükle/Aksiyon R
+  { { MACRO_KEYBOARD, 0, 'q', 0, 0 },                      // Yetenekler/Aksiyon Q
+    { MACRO_KEYBOARD, 0, 'e', 0, 0 },                      // Yetenekler/Aksiyon E
+    { MACRO_KEYBOARD, 0, 'r', 0, 0 } },                    // Yeniden yükle/Aksiyon R
   
   // Satır 3: Harita/Sosyal (M-P-Tab)
-  { { 0, 'm', 0, 0 },                      // Harita aç
-    { 0, 'p', 0, 0 },                      // Envanteri aç / Profil
-    { 0, KEY_TAB, 0, 0 } }                 // Durum ekranı / Sco tab
+  { { MACRO_KEYBOARD, 0, 'm', 0, 0 },                      // Harita aç
+    { MACRO_KEYBOARD, 0, 'p', 0, 0 },                      // Envanteri aç / Profil
+    { MACRO_KEYBOARD, 0, KEY_TAB, 0, 0 } }                 // Durum ekranı / Sco tab
 };
 
 /*

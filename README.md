@@ -1,12 +1,13 @@
 # Arduino Pro Micro 3x3 HID Macropad Firmware
 
-Arduino Pro Micro (ATmega32U4) kartı kullanarak geliştirilen 3x3 (dokuz tuş) özel macropad firmware'i. USB HID klavye cihazı olarak çalışır. Her fiziksel tuş önceden tanımlanmış bir kısayolu (örn. `Ctrl+C`, `Alt+Tab`, `Windows+D`) tetikler. Yerleşik debouncing ile Windows, macOS ve Linux'ta sürücü gerekmeden tak-çalıştır klavye gibi davranır.
+Arduino Pro Micro (ATmega32U4) kartı kullanarak geliştirilen 3x3 (dokuz tuş) özel macropad firmware'i. USB HID klavye ve medya kontrol cihazı olarak çalışır. Ses kontrolleri (Volume Up/Down/Mute), medya kontrolleri (Play/Pause/Previous/Next) ve sistem kısayollarını (Alt+F4, Win+D, Win+L) destekler. Yerleşik debouncing ile Windows, macOS ve Linux'ta sürücü gerekmeden tak-çalıştır çalışır.
 
 ## Özellikler
 
-- **Arduino IDE ile yazılmış**: C++ dilinde, Arduino HID kütüphanesi kullanılarak yazılmıştır
+- **Arduino IDE ile yazılmış**: C++ dilinde, HID-Project kütüphanesi kullanılarak yazılmıştır
 - **Arduino Pro Micro uyumlu**: ATmega32U4 çipli kartlar için geliştirilmiştir
 - **3×3 buton ızgarası**: Toplam 9 bağımsız GPIO girişi
+- **Medya kontrolleri**: Volume Up/Down/Mute, Play/Pause, Previous/Next desteği
 - **Debouncing**: 15 ms debounce süresi ile tuş titremesini önler
 - **Yapılandırılabilir makrolar**: Kolayca özelleştirilebilir tuş kombinasyonları
 - **Plug-and-play**: USB HID cihazı olarak otomatik tanınır, sürücü gerekmez
@@ -25,15 +26,15 @@ Arduino Pro Micro'da düğmelerin GPIO pin atamalarını aşağıdaki tablo gös
 
 | Konumu | Satır | Sütun | GPIO Pin | Varsayılan Tuş Kombinasyonu |
 |--------|-------|-------|----------|----------------------------|
-| Sol Üst | 1 | 1 | D4 (A6) | `Ctrl + C` |
-| Üst Orta | 1 | 2 | D6 (A7) | `Ctrl + V` |
-| Sağ Üst | 1 | 3 | D10 | `Ctrl + X` |
-| Sol Orta | 2 | 1 | D16 (A2) | `Alt + Tab` |
-| Orta Merkez | 2 | 2 | D14 (A0) | `Windows + D` |
-| Sağ Orta | 2 | 3 | D15 (A1) | `Windows + L` |
-| Sol Alt | 3 | 1 | D9 | `Ctrl + Alt + T` |
-| Alt Orta | 3 | 2 | D5 | `Ctrl + Shift + N` |
-| Sağ Alt | 3 | 3 | D3 | `Ctrl + Z` |
+| Sol Üst | 1 | 1 | D4 (A6) | **Ses Azalt** (Volume Down) |
+| Üst Orta | 1 | 2 | D6 (A7) | **Ses Arttır** (Volume Up) |
+| Sağ Üst | 1 | 3 | D10 | **Sesi Kapat** (Mute) |
+| Sol Orta | 2 | 1 | D16 (A2) | **Önceki** (Previous) |
+| Orta Merkez | 2 | 2 | D14 (A0) | **Play/Pause** |
+| Sağ Orta | 2 | 3 | D15 (A1) | **Sonraki** (Next) |
+| Sol Alt | 3 | 1 | D9 | **Alt + F4** (Uygulamayı Kapat) |
+| Alt Orta | 3 | 2 | D5 | **Win + D** (Masaüstüne Git) |
+| Sağ Alt | 3 | 3 | D3 | **Win + L** (Bilgisayarı Kilitle) |
 
 ### Arduino Pro Micro Pin Referansı
 
@@ -57,7 +58,17 @@ GND = Toprak pini (tüm düğmelerin diğer tarafına bağlansın)
 
 Arduino IDE'yi https://www.arduino.cc/en/software adresinden indirin ve yükleyin.
 
-### 2. Arduino Pro Micro Desteğinin Eklenmesi
+### 2. HID-Project Kütüphanesini Yükleme
+
+**ÖNEMLİ:** Bu firmware medya kontrolleri için HID-Project kütüphanesine ihtiyaç duyar.
+
+Arduino IDE'de:
+1. **Taslak → Kütüphane Ekle → Kütüphaneleri Yönet** menüsüne gidin
+2. Arama kutusuna "HID-Project" yazın
+3. **HID-Project by NicoHood** kütüphanesini bulun ve **Yükle** butonuna tıklayın
+4. En son sürümü yükleyin (önerilen: v2.8.4 veya üzeri)
+
+### 3. Arduino Pro Micro Desteğinin Eklenmesi
 
 Arduino IDE'de:
 1. **Dosya → Tercihler** menüsüne gidin
@@ -69,19 +80,19 @@ Arduino IDE'de:
 4. "Arduino AVR Boards" veya "Adafruit AVR Boards" arayın
 5. "Arduino Leonardo" (Arduino Pro Micro için de çalışır) yükleyin
 
-### 3. Kart Seçimi ve Portu Ayarlama
+### 4. Kart Seçimi ve Portu Ayarlama
 
 1. **Araçlar → Kart** menüsünden **Arduino Leonardo** seçin
 2. **Araçlar → Mikrodenetleyici** menüsünden **ATmega32U4** seçin
 3. **Araçlar → Port** menüsünden Arduino'nun bağlı olduğu COM portunu seçin (örn. COM3, /dev/ttyACM0)
 
-### 4. Firmware Yükleme
+### 5. Firmware Yükleme
 
 1. `HID_Macropad_3x3.ino` dosyasını Arduino IDE'de açın
 2. **Taslak → Doğrula/Derle** ile derleme kontrolü yapın
 3. **Taslak → Yükle** seçeneği ile firmware'i kartı yükleyin
 
-### 5. Donanım Bağlantısı
+### 6. Donanım Bağlantısı
 
 Tuşlarınızı aşağıdaki şemaya göre bağlayın:
 
@@ -96,14 +107,21 @@ Her tuş için İngilizce "bistable" veya "momentary" tipi switch kullanabilirsi
 
 ### Makro Tanımlarını Düzenleme
 
-`HID_Macropad_3x3.ino` dosyasında `MACRO_BINDINGS` dizisini düzenleyin:
+`HID_Macropad_3x3.ino` dosyasında `MACRO_BINDINGS` dizisini düzenleyin. İki tür makro desteklenir:
+
+1. **MACRO_KEYBOARD**: Klavye tuş kombinasyonları (Ctrl+C, Alt+F4, vb.)
+2. **MACRO_CONSUMER**: Medya kontrol tuşları (Volume Up/Down, Play/Pause, vb.)
 
 ```cpp
 const MacroKey MACRO_BINDINGS[3][3] = {
-  // Satır 1
-  { { KEY_LEFT_CTRL, 'c', 0, 0 },          // Ctrl+C
-    { KEY_LEFT_CTRL, 'v', 0, 0 },          // Ctrl+V
-    { KEY_LEFT_CTRL, 'x', 0, 0 } },        // Ctrl+X
+  // Klavye kombinasyonu örneği
+  { { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'c', 0, 0 },     // Ctrl+C
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'v', 0, 0 },     // Ctrl+V
+    { MACRO_KEYBOARD, KEY_LEFT_CTRL, 'x', 0, 0 } },   // Ctrl+X
+  // Medya kontrolü örneği
+  { { MACRO_CONSUMER, 0, MEDIA_VOLUME_UP, 0, 0 },     // Ses Arttır
+    { MACRO_CONSUMER, 0, MEDIA_PLAY_PAUSE, 0, 0 },    // Play/Pause
+    { MACRO_CONSUMER, 0, MEDIA_NEXT, 0, 0 } },        // Sonraki
   // ... kalan tuşlar
 };
 ```
@@ -124,11 +142,11 @@ Birden fazla modifier'ı bitwise OR (`|`) operatörü ile birleştirebilirsiniz:
 KEY_LEFT_CTRL | KEY_LEFT_SHIFT  // Ctrl+Shift
 ```
 
-### Desteklenen Tuş Kodları
+### Desteklenen Tuş Kodları (Klavye)
 
 Standart ASCII karakterler: `'a'`, `'b'`, ..., `'z'`, `'0'`, `'1'`, ...
 
-Özel tuşlar (Arduino HID.h içinde tanımlı):
+Özel tuşlar (HID-Project kütüphanesinde tanımlı):
 - `KEY_RETURN` - Enter
 - `KEY_BACKSPACE` - Backspace
 - `KEY_TAB` - Tab
@@ -146,44 +164,73 @@ Standart ASCII karakterler: `'a'`, `'b'`, ..., `'z'`, `'0'`, `'1'`, ...
 - `KEY_RIGHT_ARROW` - Ok Sağa
 - `KEY_F1` - `KEY_F12` - F1 ile F12 tuşları
 
-Tam liste için Arduino IDE'de `Keyboard.h` dosyasını veya Arduino resmi dokümantasyonunu inceleyebilirsiniz.
+### Desteklenen Medya Kontrol Tuşları
+
+HID-Project kütüphanesi aşağıdaki medya kontrollerini destekler:
+
+**Ses Kontrolleri:**
+- `MEDIA_VOLUME_UP` - Ses Arttır
+- `MEDIA_VOLUME_DOWN` - Ses Azalt
+- `MEDIA_VOLUME_MUTE` - Sesi Kapat/Aç
+
+**Medya Oynatıcı Kontrolleri:**
+- `MEDIA_PLAY_PAUSE` - Oynat/Duraklat
+- `MEDIA_NEXT` - Sonraki Parça
+- `MEDIA_PREVIOUS` - Önceki Parça
+- `MEDIA_STOP` - Durdur
+
+**Diğer Kontroller:**
+- `CONSUMER_CALCULATOR` - Hesap Makinesi Aç
+- `CONSUMER_EMAIL_READER` - E-posta Uygulaması Aç
+- `CONSUMER_BROWSER_HOME` - Tarayıcı Ana Sayfa
+- `CONSUMER_BROWSER_SEARCH` - Tarayıcı Arama
+
+Tam liste için HID-Project kütüphanesinin dokümantasyonunu inceleyebilirsiniz.
 
 ### Örnek Konfigürasyonlar
+
+#### Medya Kontrol Konfigürasyonu
+```cpp
+// Ses ve müzik kontrolleri
+{ { MACRO_CONSUMER, 0, MEDIA_VOLUME_DOWN, 0, 0 },  // Ses Azalt
+  { MACRO_CONSUMER, 0, MEDIA_VOLUME_UP, 0, 0 },    // Ses Arttır
+  { MACRO_CONSUMER, 0, MEDIA_VOLUME_MUTE, 0, 0 } } // Sesi Kapat
+```
 
 #### Web Tarayıcı Kontrolleri
 ```cpp
 // Sayfayı yenile
-{ KEY_LEFT_CTRL, KEY_R, 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL, 'r', 0, 0 }
 
 // Yeni sekme aç
-{ KEY_LEFT_CTRL, 't', 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL, 't', 0, 0 }
 
 // Geçmiş sil
-{ KEY_LEFT_CTRL | KEY_LEFT_SHIFT, KEY_DELETE, 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_SHIFT, KEY_DELETE, 0, 0 }
 ```
 
 #### Kod Editörü Kısayolları
 ```cpp
 // Satırı sil (VS Code)
-{ KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 'k', 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_SHIFT, 'k', 0, 0 }
 
 // Çift tıkla seç
-{ KEY_LEFT_CTRL, 'd', 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL, 'd', 0, 0 }
 
 // Multi-line edit (VS Code)
-{ KEY_LEFT_CTRL | KEY_LEFT_ALT, KEY_UP_ARROW, 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_ALT, KEY_UP_ARROW, 0, 0 }
 ```
 
 #### Sistem Kısayolları
 ```cpp
 // Ekran görüntüsü (Windows)
-{ 0, KEY_PRINT_SCREEN, 0, 0 }
+{ MACRO_KEYBOARD, 0, KEY_PRINT_SCREEN, 0, 0 }
 
 // Görev Yöneticisi (Windows)
-{ KEY_LEFT_CTRL | KEY_LEFT_SHIFT, KEY_ESC, 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_CTRL | KEY_LEFT_SHIFT, KEY_ESC, 0, 0 }
 
 // Spotlight Arama (Mac)
-{ KEY_LEFT_GUI, KEY_SPACE, 0, 0 }
+{ MACRO_KEYBOARD, KEY_LEFT_GUI, KEY_SPACE, 0, 0 }
 ```
 
 ## Debouncing Stratejisi
@@ -244,7 +291,8 @@ Bu proje MIT Lisansı altında sağlanmıştır. Kendi macropad projeleriniz iç
 
 - [Arduino Resmi Websitesi](https://www.arduino.cc)
 - [Arduino Pro Micro Dokümantasyon](https://www.arduino.cc/en/Main/ArduinoBoardProMicro)
-- [Arduino HID Kütüphanesi](https://github.com/arduino-libraries/HID)
+- [HID-Project Kütüphanesi (NicoHood)](https://github.com/NicoHood/HID)
+- [HID-Project Dokümantasyon](https://github.com/NicoHood/HID/wiki)
 - [Arduino Keyboard Kütüphanesi Referansı](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/)
 
 ## Destek ve Katkı
