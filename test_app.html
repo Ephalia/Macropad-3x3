@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Pro Micro 3x3 Macropad Virtual Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4a9eff;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #b0b0d0;
+            margin-bottom: 20px;
+        }
+
+        .macropad-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-title {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .button {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button.active {
+            animation: buttonPress 0.4s ease-out;
+        }
+
+        @keyframes buttonPress {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+
+        .sound-buttons .button {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.3) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+
+        .sound-buttons .button:hover {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.4) 0%, rgba(255, 107, 107, 0.2) 100%);
+        }
+
+        .media-buttons .button {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.3) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border-color: rgba(78, 205, 196, 0.5);
+        }
+
+        .media-buttons .button:hover {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.4) 0%, rgba(78, 205, 196, 0.2) 100%);
+        }
+
+        .system-buttons .button {
+            background: linear-gradient(135deg, rgba(168, 237, 234, 0.3) 0%, rgba(168, 237, 234, 0.1) 100%);
+            border-color: rgba(168, 237, 234, 0.5);
+        }
+
+        .system-buttons .button:hover {
+            background: linear-gradient(135deg, rgba(168, 237, 234, 0.4) 0%, rgba(168, 237, 234, 0.2) 100%);
+        }
+
+        .console-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .console-title {
+            font-size: 1.1rem;
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            background: #4a9eff;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .control-btn:hover {
+            background: #5baeff;
+            transform: translateY(-1px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.warning {
+            background: #ff6b6b;
+        }
+
+        .control-btn.warning:hover {
+            background: #ff7d7d;
+        }
+
+        .control-btn.success {
+            background: #4ecdc4;
+        }
+
+        .control-btn.success:hover {
+            background: #5ddbd3;
+        }
+
+        .console-output {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            height: 350px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .log-entry.sound {
+            border-left-color: #ff6b6b;
+        }
+
+        .log-entry.media {
+            border-left-color: #4ecdc4;
+        }
+
+        .log-entry.system {
+            border-left-color: #a8edea;
+        }
+
+        .log-time {
+            color: #888;
+            font-size: 0.7rem;
+        }
+
+        .log-command {
+            color: #4a9eff;
+            font-weight: bold;
+            margin: 3px 0;
+        }
+
+        .log-hid {
+            color: #b0b0d0;
+            font-size: 0.75rem;
+            margin: 2px 0;
+        }
+
+        .test-info {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(5px);
+        }
+
+        .test-info h3 {
+            color: #ffc107;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .test-info p {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .debounce-status {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .status-header {
+            font-weight: bold;
+            color: #ffc107;
+            margin-bottom: 8px;
+        }
+
+        .status-good {
+            color: #4ecdc4;
+        }
+
+        .status-warning {
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .button-grid {
+                gap: 10px;
+                max-width: 350px;
+            }
+
+            .button {
+                font-size: 0.7rem;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .control-btn {
+                width: 100%;
+            }
+
+            .console-output {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Arduino Pro Micro 3x3 Macropad Virtual Tester</h1>
+            <p class="subtitle">Bu araç firmware'i donanım olmadan test etmek için kullanılır</p>
+        </div>
+
+        <div class="test-info">
+            <h3>🔍 HID Raporları Simülasyonu</h3>
+            <p>Bu sanal test ortamı, gerçek Arduino Pro Micro'nin göndereceği USB HID raporlarını simüle eder. Her tuşa basıldığında, gerçek firmware'de olduğu gibi aynı HID komutlar oluşturulur.</p>
+        </div>
+
+        <div class="macropad-container">
+            <div class="grid-title">Ses Tuşları</div>
+            <div class="button-grid sound-buttons">
+                <button class="button" data-command="volume-down" data-turkish="Ses Azalt">
+                    <div>🔉</div>
+                    <div>Ses Azalt</div>
+                </button>
+                <button class="button" data-command="volume-up" data-turkish="Ses Arttır">
+                    <div>🔊</div>
+                    <div>Ses Arttır</div>
+                </button>
+                <button class="button" data-command="mute" data-turkish="Sesi Kapat">
+                    <div>🔇</div>
+                    <div>Sesi Kapat</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="macropad-container">
+            <div class="grid-title">Media Tuşları</div>
+            <div class="button-grid media-buttons">
+                <button class="button" data-command="previous" data-turkish="Önceki">
+                    <div>⏮️</div>
+                    <div>Önceki</div>
+                </button>
+                <button class="button" data-command="play-pause" data-turkish="Play/Pause">
+                    <div>⏯️</div>
+                    <div>Play/Pause</div>
+                </button>
+                <button class="button" data-command="next" data-turkish="Sonraki">
+                    <div>⏭️</div>
+                    <div>Sonraki</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="macropad-container">
+            <div class="grid-title">Sistem Tuşları</div>
+            <div class="button-grid system-buttons">
+                <button class="button" data-command="alt-f4" data-turkish="Alt+F4">
+                    <div>❌</div>
+                    <div>Alt+F4</div>
+                </button>
+                <button class="button" data-command="win-d" data-turkish="Windows+D">
+                    <div>🏠</div>
+                    <div>Windows+D</div>
+                </button>
+                <button class="button" data-command="win-l" data-turkish="Windows+L">
+                    <div>🔒</div>
+                    <div>Windows+L</div>
+                </button>
+            </div>
+        </div>
+
+        <div id="debounceStatus" class="debounce-status" style="display: none;">
+            <div class="status-header">⚡ Debouncing Test Aktif</div>
+            <div>Hızlı ardışık tıklamalar test ediliyor. Gerçek firmware'de 20ms debouncing süresi vardır.</div>
+        </div>
+
+        <div class="console-container">
+            <div class="console-header">
+                <div class="console-title">🗑 Console Log (Gönderilen HID Raporları)</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="clearConsole()">Clear Console</button>
+                    <button id="debounceBtn" class="control-btn warning" onclick="debouncingTest()">Debouncing Test</button>
+                    <button class="control-btn warning" onclick="resetLogs()">Reset</button>
+                </div>
+            </div>
+            <div id="consoleOutput" class="console-output">
+                <div class="log-entry">
+                    <div class="log-time">Sistem: Test uygulaması başlatıldı...</div>
+                    <div class="log-command">🎯 Arduino Pro Micro 3x3 Macropad Virtual Tester</div>
+                    <div class="log-hid">Firmware test modu aktif • Saklı bağımlılık yok</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // HID komut tanımları
+        const HID_COMMANDS = {
+            'volume-down': {
+                command: 'Ses Azalt',
+                hidReport: 'HID Media: VOLUME_DOWN (0xEA)',
+                category: 'sound'
+            },
+            'volume-up': {
+                command: 'Ses Arttır',
+                hidReport: 'HID Media: VOLUME_UP (0xE9)',
+                category: 'sound'
+            },
+            'mute': {
+                command: 'Sesi Kapat',
+                hidReport: 'HID Media: MUTE (0xE2)',
+                category: 'sound'
+            },
+            'previous': {
+                command: 'Önceki',
+                hidReport: 'HID Media: PREVIOUS (0xB6)',
+                category: 'media'
+            },
+            'play-pause': {
+                command: 'Play/Pause',
+                hidReport: 'HID Media: PLAY_PAUSE (0xCD)',
+                category: 'media'
+            },
+            'next': {
+                command: 'Sonraki',
+                hidReport: 'HID Media: NEXT (0xB5)',
+                category: 'media'
+            },
+            'alt-f4': {
+                command: 'Alt+F4',
+                hidReport: 'HID Keyboard: ALT (0x04) + F4 (0x3D)',
+                category: 'system'
+            },
+            'win-d': {
+                command: 'Windows+D',
+                hidReport: 'HID Keyboard: GUI (0x08) + D (0x07)',
+                category: 'system'
+            },
+            'win-l': {
+                command: 'Windows+L',
+                hidReport: 'HID Keyboard: GUI (0x08) + L (0x0F)',
+                category: 'system'
+            }
+        };
+
+        // Application state
+        let keyPressHistory = [];
+        let logHistory = [];
+        let debounceTestActive = false;
+        let clickTimestamps = new Map();
+        let debounceTimeout = 20; // ms - matches firmware setting
+
+        // Button click handler
+        function handleButtonClick(button) {
+            const command = button.dataset.command;
+            const turkishName = button.dataset.turkish;
+            const timestamp = new Date();
+            
+            // Visual feedback
+            button.classList.add('active');
+            setTimeout(() => button.classList.remove('active'), 400);
+
+            // Check for rapid clicks within debounce window
+            const lastClickTime = clickTimestamps.get(command) || 0;
+            const timeDiff = timestamp.getTime() - lastClickTime;
+            const isRapidClick = timeDiff < debounceTimeout;
+            
+            clickTimestamps.set(command, timestamp.getTime());
+
+            // Get HID command info
+            const hidInfo = HID_COMMANDS[command];
+            
+            // Log the key press
+            logKeyPress(turkishName, hidInfo.hidReport, hidInfo.category, timestamp, isRapidClick, timeDiff);
+
+            // Add to key press history
+            keyPressHistory.push({
+                command: turkishName,
+                timestamp: timestamp,
+                isRapidClick: isRapidClick,
+                timeDiff: timeDiff
+            });
+
+            // Keep only last 20 entries
+            if (keyPressHistory.length > 20) {
+                keyPressHistory.shift();
+            }
+
+            // Update debounce status if test is active
+            if (debounceTestActive) {
+                updateDebounceStatus(timestamp);
+            }
+        }
+
+        function logKeyPress(buttonName, hidReport, category, timestamp, isRapidClick, timeDiff) {
+            const timeStr = timestamp.toLocaleTimeString('tr-TR', { hour12: false });
+            const dateStr = timestamp.toLocaleDateString('tr-TR');
+            
+            let debounceInfo = '✅ Normal Basış';
+            if (isRapidClick) {
+                debounceInfo = `⚡ Hızlı Ardışık Tıklama (${timeDiff}ms • Debounce: ${debounceTimeout}ms)`;
+            }
+
+            const logEntry = {
+                timestamp: timestamp,
+                buttonName: buttonName,
+                hidReport: hidReport,
+                category: category,
+                isRapidClick: isRapidClick,
+                timeDiff: timeDiff
+            };
+
+            logHistory.push(logEntry);
+            if (logHistory.length > 20) {
+                logHistory.shift();
+            }
+
+            const consoleOutput = document.getElementById('consoleOutput');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry ${category}`;
+            
+            logDiv.innerHTML = `
+                <div class="log-time">${dateStr} ${timeStr}</div>
+                <div class="log-command">➡️ ${buttonName} Sinyali Gönderildi</div>
+                <div class="log-hid">${hidReport}</div>
+                <div class="log-hid">${debounceInfo}</div>
+            `;
+            
+            consoleOutput.appendChild(logDiv);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function updateDebounceStatus(currentTime) {
+            // Check for rapid clicks in last 500ms
+            const recentClicks = keyPressHistory.filter(entry => 
+                currentTime.getTime() - entry.timestamp.getTime() < 500
+            );
+
+            const rapidClicks = recentClicks.filter(entry => entry.isRapidClick);
+            const debounceStatus = document.getElementById('debounceStatus');
+            
+            if (rapidClicks.length > 0) {
+                debounceStatus.style.display = 'block';
+                debounceStatus.innerHTML = `
+                    <div class="status-header">⚡ Debouncing Test Aktif</div>
+                    <div><strong>Rapid Clicks Detected:</strong> ${rapidClicks.length} hızlı tıklama</div>
+                    <div><strong>Debounce Süresi:</strong> ${debounceTimeout}ms (Firmware ayarı)</div>
+                    <div class="${rapidClicks.length > 3 ? 'status-warning' : 'status-good'}">
+                        ${rapidClicks.length > 3 ? '❌ Çok fazla hızlı tıklama - debounce etkisiz!' : '✅ Normal debouncing davranışı'}
+                    </div>
+                `;
+            } else {
+                debounceStatus.style.display = 'block';
+                debounceStatus.innerHTML = `
+                    <div class="status-header">⚡ Debouncing Test Aktif</div>
+                    <div><strong>Debounce Süresi:</strong> ${debounceTimeout}ms (Firmware ayarı)</div>
+                    <div class="status-good">✅ Normal debouncing davranışı</div>
+                `;
+            }
+        }
+
+        function clearConsole() {
+            const consoleOutput = document.getElementById('consoleOutput');
+            consoleOutput.innerHTML = `
+                <div class="log-entry">
+                    <div class="log-time">Sistem: Console temizlendi</div>
+                    <div class="log-command">🗑️ Tüm loglar silindi</div>
+                    <div class="log-hid">${new Date().toLocaleString('tr-TR')}</div>
+                </div>
+            `;
+        }
+
+        function debouncingTest() {
+            debounceTestActive = !debounceTestActive;
+            const debounceStatus = document.getElementById('debounceStatus');
+            const debounceBtn = document.getElementById('debounceBtn');
+
+            if (debounceTestActive) {
+                debounceBtn.innerHTML = '✓ Debouncing Test ✓';
+                debounceBtn.classList.remove('warning');
+                debounceBtn.classList.add('success');
+                
+                // Log test activation
+                logKeyPress('DEBOUNCE TEST MODE', 'Debounce test modu aktif edildi', 'system', new Date(), false, 0);
+            } else {
+                debounceBtn.innerHTML = 'Debouncing Test';
+                debounceBtn.classList.remove('success');
+                debounceBtn.classList.add('warning');
+                debounceStatus.style.display = 'none';
+
+                // Log test deactivation
+                logKeyPress('DEBOUNCE TEST MODE', 'Debounce test modu kapatıldı', 'system', new Date(), false, 0);
+            }
+        }
+
+        function resetLogs() {
+            keyPressHistory = [];
+            logHistory = [];
+            debounceTestActive = false;
+            clickTimestamps.clear();
+            
+            const debounceStatus = document.getElementById('debounceStatus');
+            debounceStatus.style.display = 'none';
+            
+            const debounceBtn = document.getElementById('debounceBtn');
+            debounceBtn.innerHTML = 'Debouncing Test';
+            debounceBtn.classList.remove('success');
+            debounceBtn.classList.add('warning');
+
+            // Clear console and show reset message
+            clearConsole();
+
+            const consoleOutput = document.getElementById('consoleOutput');
+            consoleOutput.innerHTML = `
+                <div class="log-entry">
+                    <div class="log-time">Sistem: Tüm veriler sıfırlandı!</div>
+                    <div class="log-command">🔄 Reset butonuna basıldı</div>
+                    <div class="log-hid">Tüm geçmiş temizlendi • ${new Date().toLocaleString('tr-TR')}</div>
+                </div>
+            `;
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    handleButtonClick(this);
+                });
+            });
+
+            // Log initialization
+            logKeyPress('SYSTEM INITIALIZATION', 'Virtual Tester başarıyla yüklendi!', 'system', new Date(), false, 0);
+        });
+    </script>
+</body>
+</html>
